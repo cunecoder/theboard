@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>The Board - Events</title>
+</head>
+<body>
+    <h1>Upcoming Events</h1>
+    <ul>
+    {% for event in events %}
+        <li>
+            <strong>{{ event.title }}</strong><br>
+            {{ event.start_time }} - {{ event.end_time }}<br>
+            {{ event.location }}<br>
+            {{ event.description }}<br>
+            
+            <a href="{{ event.google_calendar_url }}" target="_blank">Add to Google Calendar</a>
+        </li>
+    {% empty %}
+        <li>No events yet!</li>
+    {% endfor %}
+    </ul>
+</body>
+</html>
