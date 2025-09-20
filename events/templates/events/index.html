@@ -1,23 +1,151 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>The Board - Events</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Board</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.2/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Additional custom styling */
+        .event-card {
+            background-color: #2D2D2D;
+            border-radius: 12px;
+            padding: 16px;
+            color: white;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .event-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .event-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .event-time, .event-location {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        .event-description {
+            font-size: 1rem;
+            margin-top: 8px;
+        }
+
+        .add-to-calendar-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-align: center;
+            margin-top: 16px;
+            display: inline-block;
+        }
+
+        .add-to-calendar-btn:hover {
+            background-color: #45a049;
+        }
+
+        .header {
+            background-color: #1b3272ff; /* Blue background */
+            color: white;
+            padding: 40px 20px; /* Padding for vertical spacing */
+            text-align: center; /* Center align the text */
+            font-size: 4rem; /* Larger font size */
+            font-weight: bold; /* Bold text */
+            border-radius: 12px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .highlight-today {
+            border: 2px solid #2563eb; /* Tailwind blue-600 */
+            box-shadow: 0 0 12px #2563eb;
+            background-color: #1e40af; /* a nice blue shade */
+        }
+
+        .date-button {
+            width: 72px;
+            height: 72px;
+            border-radius: 9999px; /* full circle */
+            background-color: #1f2937; /* Tailwind's bg-gray-800 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            box-shadow: 0 0 8px rgb(0 0 0 / 0.3);
+            flex-shrink: 0;
+        }
+
+        .date-button .day {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #bbb;
+        }
+
+        .date-button .date {
+            font-weight: 900;
+            font-size: 1.25rem;
+            color: #eee;
+        }
+
+        .date-button.selected {
+            background-color: #2563eb; /* Tailwind blue-600 */
+            color: white;
+            box-shadow: 0 0 12px #2563eb;
+        }
+
+        .date-selector {
+            display: flex;
+            gap: 1rem;
+            justify-content: center; /* centers all child buttons horizontally */
+            padding: 1rem 2rem;
+            scrollbar-width: none; /* hide scrollbar */
+        }
+    </style>
 </head>
-<body>
-    <h1>Upcoming Events</h1>
-    <ul>
-    {% for event in events %}
-        <li>
-            <strong>{{ event.title }}</strong><br>
-            {{ event.start_time }} - {{ event.end_time }}<br>
-            {{ event.location }}<br>
-            {{ event.description }}<br>
-            
-            <a href="{{ event.google_calendar_url }}" target="_blank">Add to Google Calendar</a>
-        </li>
-    {% empty %}
-        <li>No events yet!</li>
-    {% endfor %}
-    </ul>
+<body class="bg-black text-white font-sans">
+
+    <div class="header">
+        The Board - Events
+    </div>
+
+    <!-- Date Selector -->
+    <div class="date-selector flex gap-4 overflow-x-auto p-4 scrollbar-hide">
+        {% for d in date_range %}
+            <div
+                class="date-button {% if d == today %}selected{% else %}bg-gray-800{% endif %}"
+            >
+                <div class="day">{{ d|date:"D" }}</div>
+                <div class="date">{{ d|date:"jS" }}</div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- All Events (no filtering) -->
+    <div class="container mx-auto px-4 py-6 h-[calc(100vh-260px)] overflow-y-auto space-y-6">
+        {% for event in events %}
+            <div class="event-card bg-gray-800 p-6 rounded-lg shadow-lg transition-transform transform hover:-translate-y-1
+                {% if event.start_time.date == today %} highlight-today {% endif %}">
+                
+                <div class="event-title text-2xl font-semibold">{{ event.title }}</div>
+                <div class="event-time text-sm text-gray-300 mt-2">
+                    {{ event.start_time|date:"F j, Y, g:i a" }} - {{ event.end_time|date:"g:i a" }}
+                </div>
+                <div class="event-location text-sm text-gray-400 mt-1">{{ event.location }}</div>
+                <div class="event-description mt-3 text-base text-white">{{ event.description|truncatewords:20 }}</div>
+                <a href="{{ event.google_calendar_url }}" target="_blank"
+                   class="inline-block mt-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+                    Add to Google Calendar
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+
 </body>
 </html>
